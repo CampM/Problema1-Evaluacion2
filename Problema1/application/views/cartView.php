@@ -1,0 +1,89 @@
+<div class="col-md-12">
+
+	<div class="row">
+		<?php if (isset($form['error'])) { ?>
+
+		<div class="alert alert-danger" role="alert"><?= $form['error'] ?></div>
+
+		<?php } ?>
+
+		<h2>Contenido del Carrito de la Compra</h2>
+		<hr />
+
+		<table class="table table-bordered">
+			<tr>
+				<th>Código</th>
+				<th>Concepto</th>
+				<th>Precio</th>
+				<th>Unidades</th>
+				<th>Total</th>
+				<th>Opciones</th>
+			</tr>
+
+			<?php if (isset($cart['cartProductList'])){foreach ($cart['cartProductList'] as $row) { ?>
+			<tr>
+				<td>
+					<input type="hidden" name="idProduct" value="<?= $row['idProduct'] ?>" />
+					<?= $row['idProduct'] ?>
+				</td>
+				<td><?= $row['name'] ?></td>
+				<td><?= $row['price'] ?>€</td>
+				<td>
+					<input type="text" name="quantity" value="<?= $row['quantity']?>" />
+				</td>
+				<td data-section="total"><?= $row['price'] * $row['quantity'] ?> €</td>
+				<td>
+					<button name="update" class="btn btn-default">Actualizar</button>
+					<a class="btn btn-default" href="<?= site_url('cartController/DeleteProduct/') . $row['idProduct']?>">Eliminar</a>
+				</td>
+			</tr>
+			<?php }} ?>
+			<tr>
+				<td></td>
+				<td>Total</td>
+				<td></td>
+				<td id="tableTotalNProducts"><?= $cart['totalProduct'] ?></td>
+				<td id="tableTotalPrice"><?= $cart['totalPrice'] ?> €</td>
+			</tr>
+		</table>
+
+		<p>
+			<a href="<?= site_url('cartController/EmptyCart') ?>" class="btn btn-default">
+				Vaciar Cesta
+			</a> 
+			<a href="<?= site_url('orderController/CreateOrderData') ?>" class="btn btn-primary">
+				Realizar pedido
+			</a>
+		</p>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function(){    
+
+		$('[name="update"]').click(function(){
+			var source = $(this);
+			var tr = source.closest('tr');
+			var id = tr.find('[name="idProduct"]').val();
+			var quantity = tr.find('[name="quantity"]').val();
+
+			if ($.isNumeric(quantity) && quantity > 0){
+				$.ajax({
+					url: '<?= site_url('/cartController/UpdateItemCart/') ?>' + quantity + '/' + id,
+				}).done(function(data){
+					ReloadCart();
+					tr.find('[data-section="total"]').html(data.newTotalRow + ' €');
+					$('#tableTotalNProducts').html(data.totalProduct);
+					$('#tableTotalPrice').html(data.totalPrice + ' €');
+				});
+			}
+
+		});
+
+	});
+
+
+
+</script>

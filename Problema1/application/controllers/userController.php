@@ -329,55 +329,87 @@ class UserController extends CI_Controller {
 
 
     /**
-     *Funcion encargada de procesar el cambio de contraseña
+     *F uncion encargada de procesar el cambio de contraseña
      */
     public function ResetPass()
     {
-        $this->form['token'] = $this->token();
-
-        //Comprobar validacion de campos
-        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form["form_email"] = form_open("userController/RecoverPass", array(
+            "class" => "form-horizontal"
+        ));
         
-        //Comprobar validación del formulario
-        if ($this->form_validation->run() == FALSE) {
-            $this->form["email"] = form_error('email');
-            
-            $this->form["emailForm"] = form_open("", array(
-                "class" => "form-horizontal"
-            ));
-            
-            $data['form'] = $this->form;
-            $data['bodyView'] = 'forms/userNewPassForm';
+        $this->form['token'] = $this->token();
+        $data['form'] = $this->form;
+        $data['bodyView'] =  $this->load->view('forms/userNewPassForm', $data, TRUE);
+        $this->load->view('layout', $data);
+    }
 
-            $this->load->view('layout', $data);
+    /**
+     *F uncion encargada de procesar el cambio de contraseña
+     */
+    public function RecoverPass()
+    {
+        $this->CheckToken('tokenLogin');
+        
+        //Validacion de campos del formulario
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');;
+        
+        $form["form_email"] = form_open("userController/RecoverPass", array(
+            "class" => "form-horizontal"
+        ));
+
+        //Validacion del formulario
+        if ($this->form_validation->run() == FALSE) {
+
+            $this->form["error"] = 'Invalid email.';
+            $this->LoginUserForm();
 
         } else {
-            $user = $this->userModel->GetUserByEmail($this->input->post('email'));
             
-            if (! empty($user)) {
-                
-                $newPass = substr(md5(rand()), 0, "10"); 
-                $newPass2 = md5($newPass); 
-                
-                $result = $this->userModel->EditUser(array(
-                    'password' => $newPass
-                	), $user['idUser']);
+            $email = $this->input->post('email');
+            $user = $this->userModel->GetUserByEmail($email);
 
-                if ($result == 1) {
-                    
-                    $email = $this->PassEmail($newPass);
-                }
+            if (($user == TRUE) && (!empty($user))) {
+                $user = $user[0];
+                $idUser = $user->idUser;
+                $newPass = rand(1000, 999999);
+
+                $this->userModel->EditUser(array('pass' => md5($newPass)), $idUser);
+                
+                $this->PassEmail($email, $newPass);
+                $this->form["error"] = 'Se ha mandado un correo con tu nueva contraseña.';
+                $this->LoginUserForm();
+            } else {
+                $this->form["error"] = 'User or password incorrect';
+                $this->ResetPass();
             }
         }
     }
 
-
-
-
-    //Funcion encargada de enviar la nueva clave a traves del email
-	private function PassEmail($pass)
+    /**
+     */
+    private function PassEmail($email, $pass)
     {
+        $body = '<html>
+                    <body>
+                        <div>Esta es su nueva contraseña:</div>
+                        <div>' . $pass . '</div>
+                    </body>
+                </html>';
+        // Utilizando sendmail
+        $config['protocol'] = 'smtp';
+        $config['smtp_host'] = 'mail.iessansebastian.com';
+        $config['smtp_user'] = 'aula4@iessanseastian.com';
+        $config['smtp_pass'] = 'dawanyo2017';
+        $config['mailtype'] = 'html';
+        $config['charset'] = 'utf-8';
         
+        $this->email->initialize($config);
+        $this->email->from('aula4@iessansebastian.com', 'Prueba Automática desde CI');
+        $this->email->to($email);
+        
+        $this->email->subject("Shopping Cart");
+        $this->email->message($body);
+        $this->email->send();
     }
 
 }

@@ -33,7 +33,32 @@ class UserController extends CI_Controller {
         $this->load->view('layout', $data);
     }
 
-	
+	//COMENTAR
+	public function UserPanel()
+    {
+        $login = $this->session->userdata("login");
+        if ($this->login->UserLoggedIn()) {
+            
+            $this->form['error'] = $this->session->flashdata('incorrect_order');
+            
+            
+            $unprocessedOrder = $this->orderModel->GetUnprocessedOrder($login['idUser']);
+            $orderHistory = $this->orderModel->GetOrderHistory($login['idUser']);
+            $user = $this->userModel->GetUserById($login['idUser']);            
+            
+            $data['form'] =  $this->form;
+            $data['user'] =  $user;
+            $data['unprocessedOrder'] =  $unprocessedOrder;
+            $data['order'] =  $orderHistory;
+
+            $data['bodyView'] =  $this->load->view('userPanelView', $data, TRUE);
+            $this->load->view('layout', $data);
+
+        } else {
+            $this->session->set_userdata("url", 'userPanelView');
+            redirect(site_url() . 'userController/LoginUserForm');
+        }
+    }
     
     /**
      * Verifica token
@@ -58,8 +83,8 @@ class UserController extends CI_Controller {
         $id = $this->input->post('id');
 
        //Validacion de los campos del formulario
-        $this->form_validation->set_rules('userName', 'UserName', 'required');
         if (!isset($id) || empty($id)){
+            $this->form_validation->set_rules('userName', 'UserName', 'required|is_unique[user.userName]');
             $this->form_validation->set_rules('pass', 'Password', 'trim|required|md5');
             $this->form_validation->set_rules('passConf', 'Password Confirmation', 'trim|required|matches[passConf]');
         }
@@ -86,7 +111,7 @@ class UserController extends CI_Controller {
             $this->form["province"] = form_error('province');
             
             if (isset($id) && !empty($id))
-            {
+            {   
                 $this->EditUserForm($this->input->post('id'));
             }
             else
@@ -96,8 +121,6 @@ class UserController extends CI_Controller {
         } else {
             
             $user = array(
-                'userName' => $this->input->post('userName'),
-                'pass' => $this->input->post('pass'),
                 'email' => $this->input->post('email'),
                 'name' => $this->input->post('name'),
                 'surnames' => $this->input->post('surnames'),
@@ -107,18 +130,20 @@ class UserController extends CI_Controller {
                 'province_idProvince' => $this->input->post('province'),
                 'rol' => 'user',
                 'isActive' => true
-            );              
+            );
+            
            
             // si existe id es edicion
             if (isset($id) && !empty($id)) {
                
-                $rows = $this->userModel->EditUser($user, $id);
-                if ($rows == 1)
-                    redirect(site_url() . 'home');                    
-                else
-                    redirect(site_url() . $this->session->userdata("url"));
+                $this->userModel->EditUser($user, $id);
+                redirect(site_url('userController/UserPanel/' . $id));   
+
             } else {
                 
+                $user['userName'] = $this->input->post('userName');
+                $user['pass'] = $this->input->post('pass');
+
                 $result = $this->userModel->CreateUser($user);
              
                 if ($result) {
@@ -192,7 +217,7 @@ class UserController extends CI_Controller {
         $data['provinceList'] = $provinceList;
         $data['form'] = $this->form;
         
-        $data['bodyView'] =  $this->load->view('forms/newUserForm', $data, TRUE);
+        $data['bodyView'] =  $this->load->view('forms/userNewForm', $data, TRUE);
         $this->load->view('layout', $data);
 
     }
@@ -211,16 +236,21 @@ class UserController extends CI_Controller {
                 $user = $this->userModel->GetUserById($id);
 
                 if (! empty($user)) {
-                    $this->form['user'] = $user;
                     $this->form['id'] = $id;
-                    
-                    $this->form["editForm"] = form_open("userController/ProcessorUserForm", array(
+                    $this->form["form_edit"] = form_open("userController/ProcessorUserForm", array(
                         "class" => "form-horizontal",
                         "name" => "ProcessorUserForm"
                     ));
                     
                     $this->form['token'] = $this->token();
-                    $provinceList = $this->provinceModel->GetProvinceList();
+                    $data['provinceList'] = $this->provinceModel->GetProvinceList();
+                    $data['form'] = $this->form;
+                    $data['userData']  = $user;
+                    $data['user'] = $this->session->userdata("login");
+                    
+
+                    $data['bodyView'] =  $this->load->view('forms/userEditForm', $data, TRUE);
+                    $this->load->view('layout', $data);
                     
                 } else {
                     redirect(site_url() . 'home');
@@ -278,6 +308,61 @@ class UserController extends CI_Controller {
         redirect(site_url('home'));
     }
 
+
+
+    /**
+     *Funcion encargada de procesar el cambio de contraseña
+     */
+    public function ResetPass()
+    {
+        $this->form['token'] = $this->token();
+
+        //Comprobar validacion de campos
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        
+        //Comprobar validación del formulario
+        if ($this->form_validation->run() == FALSE) {
+            $this->form["email"] = form_error('email');
+            
+            $this->form["emailForm"] = form_open("", array(
+                "class" => "form-horizontal"
+            ));
+            
+            $data['form'] = $this->form;
+            $data['bodyView'] = 'forms/userNewPassForm';
+
+            $this->load->view('layout', $data);
+
+        } else {
+            $user = $this->userModel->GetUserByEmail($this->input->post('email'));
+            
+            if (! empty($user)) {
+                
+                $newPass = substr(md5(rand()), 0, "10"); 
+                $newPass2 = md5($newPass); 
+                
+                $result = $this->userModel->EditUser(array(
+                    'password' => $newPass
+                	), $user['idUser']);
+
+                if ($result == 1) {
+                    
+                    $email = $this->PassEmail($newPass);
+                }
+            }
+        }
+    }
+
+
+
+
+    //Funcion encargada de enviar la nueva clave a traves del email
+	private function PassEmail($pass)
+    {
+        
+    }
+
+}
 
 /* End of file userController.php */
 /* Location: ./application/controllers/userController.php */

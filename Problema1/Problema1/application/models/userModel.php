@@ -43,7 +43,7 @@ class UserModel extends CI_Model {
      */
     public function GetUserById($id){
         
-        return $this->db->select('*')->from('user','province')->join('province', 'province.idProvince = user.province_idProvince')->where('idUser', $id)->get()->result();
+        return $this->db->select('*')->from('user','province')->join('province', 'province.idProvince = user.province_idProvince')->where('idUser', $id)->get()->row_array();
     }
 
     /**
@@ -75,7 +75,8 @@ class UserModel extends CI_Model {
      * @return     <type>  ( description_of_the_return_value )
      */
     public function EditUser($data, $id){
-        $this->db->where('idUser',$id)->get('user');
+        echo var_dump($data);
+        $this->db->where('idUser',$id);
         $this->db->update('user', $data);     
 
         return $this->db->affected_rows();

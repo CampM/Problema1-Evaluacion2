@@ -4,7 +4,7 @@
     <?php } ?>
     <div class="col-md-5">
 
-        <h3><?= isset($form['id']) && $form['id'] != 0 ? "Editar Usuario" : "Nuevo Usuario" ?></h3>
+        <h3>Nuevo Usuario</h3>
         <hr />
         <?= $form['form_signup'] ?>
         <div class="form-group <?php if (isset($form['userName'])) { ?> has-error <?php } ?>">
@@ -17,21 +17,11 @@
         </div>
 
         <div
-            class="form-group <?php if (isset($form['email'])) { ?> has-error <?php } ?>">
-            <label for="email" class="col-sm-2 co ntrol-label">Email</label>
-            <div class="col-sm-10">
-                <input type="email" class="form-control" id="email" name="email"
-                    value="<?= set_value('email') ?>"> <span><?= isset($form['email']) ? $form['email'] : '' ?></span>
-            </div>
-
-        </div>
-
-        <div
             class="form-group <?php if (isset($form['pass'])) { ?> has-error <?php } ?>">
             <label for="pass" class="col-sm-2 control-label">Contraseña</label>
             <div class="col-sm-10">
                 <input type="pass" class="form-control" id="pass"
-                    name="pass" placeholder="Contraseña"> <span><?= isset($form['pass']) ? $form['pass'] : '' ?></span>
+                    name="pass" placeholder="Nueva contraseña"> <span><?= isset($form['pass']) ? $form['pass'] : '' ?></span>
             </div>
         </div>
 
@@ -43,6 +33,17 @@
                 <input type="pass" class="form-control" name="passConf"
                     id="passConf" placeholder="Convirmar contraseña"> <span><?= isset($form['passConf']) ? $form['passConf'] : '' ?></span>
             </div>
+        </div>
+
+
+        <div
+            class="form-group <?php if (isset($form['email'])) { ?> has-error <?php } ?>">
+            <label for="email" class="col-sm-2 co ntrol-label">Email</label>
+            <div class="col-sm-10">
+                <input type="email" class="form-control" id="email" name="email"
+                    value="<?= set_value('email') ?>"> <span><?= isset($form['email']) ? $form['email'] : '' ?></span>
+            </div>
+
         </div>
 
         <hr />
@@ -85,7 +86,7 @@
             <label for="province" class="col-sm-2 control-label">Provincia</label>
             <div class="col-sm-10">
                 <select class="form-control" name="province" id="province"> <?php foreach ($provinceList as $row) { ?>
-                    <option value="<?= $row['idProvince'] ?>"><?= $row['name'] ?></option>
+                    <option value="<?= $row['idProvince'] ?>"><?= $row['provinceName'] ?></option>
                     <?php } ?>
                 </select>
             </div>

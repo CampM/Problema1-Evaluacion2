@@ -72,7 +72,17 @@ class ProductModel extends CI_Model {
    */
   public function GetFeaturedList($limit, $offset)
   {
-    return $this->db->select('*')->from('product')->join('featured', 'product.idProduct = featured.product_idProduct')->where('isActive', true)->limit($limit, $offset)->get()->result();
+    $today = date('Y-m-d');
+    $where = "isActive = 1
+              AND
+              ((dateFrom IS NULL AND dateTo IS NULL) 
+              OR 
+              (dateFrom <= '" . $today . "' AND dateTo >= '" . $today . "'))";
+              
+    return $this->db->select('*')->from('product')
+      ->join('featured', 'product.idProduct = featured.product_idProduct')
+      ->where($where)
+      ->limit($limit, $offset)->get()->result();
   }
 
   /**

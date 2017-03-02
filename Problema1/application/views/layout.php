@@ -11,25 +11,6 @@
             type="text/css" rel="stylesheet" />
         <link href="<?= base_url() ?>assets/css/tienda.css" type="text/css"
             rel="stylesheet" />
-
-        <style type="text/css">
-            .own-pagination strong, .own-pagination a{
-                width: 25px;
-                height: 25px;
-                display: inline-block;
-                border: solid 1px;
-                text-align: center;
-                margin-left: 2px;
-                padding: 2px;
-            }
-
-            .own-category a{
-                border: solid 1px;
-                text-align: center;
-                margin-left: 2px;
-                padding: 2px;
-            }
-        </style>
     
         <!--JAVASCRIPT-->
         <script src="<?= base_url() ?>assets/js/jquery-1.11.1.min.js"
@@ -88,7 +69,7 @@
     <body>
 
         <!-- Navigation -->
-        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background: #08088A; ">
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
             <div class="container">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
@@ -167,11 +148,14 @@
             </div>
             <!-- /.container -->
         </nav>
-        <div class="container">
-            <div class="row"><?= $bodyView ?></div>
+
+        <div class="own-container container">
+            <div class="row">
+                <?= $bodyView ?>
+            </div>
         </div>
 
-        <div class="navbar" style="background: #08088A; margin-top: 15px;">
+        <div class="navbar navbar-inverse navbar-fixed-bottom">
             <div class="container">
                 <div class="navbar-brand" style="color:#9d9d9d">
                     Moises Campon Garcia (c)

@@ -42,10 +42,16 @@ class CartController extends CI_Controller {
      */
     public function EmptyCart()
     {
+        $user = $this->session->userdata('login');
         $cart = $this->cart_library->destroy();
-        redirect(site_url('cartController/GetCartView'));
+        //redirect(site_url('userController/UserPanel/') . $user["idUser"]);
+        redirect(site_url('cartController/GetCartView/'));
     }
     
+    /**
+     * Obtiene los datos del carro para las vistas
+     * Trabaja con ajax
+     */
     public function GetCartData(){
         header('Content-Type: application/json');
         echo json_encode($this->cart_library->GetCartData());
@@ -66,11 +72,22 @@ class CartController extends CI_Controller {
         {
             $product = $this->productModel->GetProductById($idProduct);
             $cart = $this->cart_library->GetCartData();
+            
+
             $iva = $product->iva;
             if ($iva == NULL)
             {
                 $iva = 1;
             }
+
+            $finalPrice = $product->price * $iva;
+
+            if (($product->discount != NULL) && ($product->discount > 0)){ 
+                $finalPrice = $finalPrice * (100 - $product->discount) / 100;
+            }
+
+            $finalPrice = round($finalPrice, 2);
+
 
             if (!empty($cart) && isset($cart['cartProductList'][$idProduct]))
             {
@@ -103,7 +120,7 @@ class CartController extends CI_Controller {
                 $this->cart_library->AddProductCart(array(
                     'id' => $idProduct,
                     'quantity' => $newQuantity,
-                    'price' => $product->price * $iva,
+                    'price' => $finalPrice,
                     'name' => $product->name
                 ));
             }
@@ -115,7 +132,7 @@ class CartController extends CI_Controller {
     
    /**
     * Actualiza en una cantidad determinada un producto de id determinada del carro
-    * Utiliza ajax
+    * Trabaja con ajax
     *
     * @param      <type>  $quantity   The quantity
     * @param      <type>  $idProduct  The identifier product

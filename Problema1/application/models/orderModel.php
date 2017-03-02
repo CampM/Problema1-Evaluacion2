@@ -85,7 +85,7 @@ class OrderModel extends CI_Model {
      */
     public function GetInvoice($orderId)
     {
-        $order = $this->db->where('idOrder', $orderId)->where('stay', 'pendiente')->get('order')->row_array();
+        $order = $this->db->where('idOrder', $orderId)->get('order')->row_array();
         
         $lineList = $this->db->select('*')->from('orderline', 'product')->join('product', 'product.idProduct = orderline.product_idProduct')->where('order_idOrder', $orderId)->get()->result_array();
 
@@ -120,7 +120,7 @@ class OrderModel extends CI_Model {
                 'product_idProduct' => $idProduct,
                 'order_idOrder' => $idOrder,
                 'quantity' => $item['quantity'],
-                'price' => $item['price']
+                'linePrice' => $item['price']
             );
         }
         $this->db->insert_batch('orderline', $data);
@@ -146,26 +146,6 @@ class OrderModel extends CI_Model {
             $this->db->update('product', $data);
         }
     }
-
-    /**
-     * Devuelve las líneas de un pedido
-     *
-     * @param      <type>  $id     The identifier
-     *
-     * @return     <type>  The order line by identifier.
-     */
-    /*public function GetOrderLineById($id)
-    {
-        $sql = "select pe.*, p.*,l.*
-        from pedido pe
-        inner join linea_pedido l on l.idPedido = pe.idPedido
-        inner join producto p on l.idProducto = p.idProducto
-        where l.idPedido = $id";
-        
-        $orderline = $this->db->query($sql);
-        
-        return $orderline->result();
-    }*/
 
 }
 

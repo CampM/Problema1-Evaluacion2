@@ -18,9 +18,9 @@
 			<tr>
 				<td><?= $row['product_idProduct'] ?></td>
 				<td><?= $row['name'] ?></td>
-				<td><?= $row['price'] ?> €</td>
+				<td><?= $row['linePrice'] ?> €</td>
 				<td><?= $row['quantity'] ?></td>
-				<td><?= $row['price'] * $row['quantity'] ?> €</td>
+				<td><?= $row['linePrice'] * $row['quantity'] ?> €</td>
 			</tr>
 			<?php }} ?>
 			<tr>

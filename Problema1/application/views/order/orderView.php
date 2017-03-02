@@ -24,7 +24,7 @@
 				<td><?= $row['idProduct'] ?></td>
 				<td><?= $row['name'] ?></td>
 				<td><?= $row['price'] ?>€</td>
-				<td><?= $row['quantity'] ?>€</td>
+				<td><?= $row['quantity'] ?></td>
 				<td><?= $row['price'] * $row['quantity'] ?> €</td>
 			</tr>
 			<?php }} ?>

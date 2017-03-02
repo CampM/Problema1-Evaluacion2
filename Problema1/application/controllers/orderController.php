@@ -41,7 +41,7 @@ class OrderController extends CI_Controller {
             }
         } else {
             $this->session->set_flashdata('incorrect_cart', 'El carro de la compra está vacío');
-            redirect(site_url() . 'cartController/GetCartView');
+            redirect(site_url('cartController/GetCartView'));
         }
     }
 
@@ -126,7 +126,7 @@ class OrderController extends CI_Controller {
     }
 
     /**
-     * Cancelar pedidos no procesados
+     * Cancela pedidos no procesados
      *
      * @param unknown $id            
      */
@@ -144,11 +144,27 @@ class OrderController extends CI_Controller {
     }
 
     /**
+     * En teoria manda por correo la informacion del envio
+     *
+     * @param      string  $id     The identifier
      */
     public function OrderEmail($id)
     {
         $login = $this->session->userdata("login");
         $user = $this->userModel->GetUserById($login['idUser']);
+
+           
+        $data['user'] = $login;
+        $data['order'] = $result['order'];
+        $data['lineOrderList'] = $result['lineOrderList'];
+
+        $body =  '<html>
+                    <body>
+                        <h1>Datos de la Factura:</h1>' 
+                        . $this->load->view('order/invocePDFView', $data, TRUE) 
+                .  '</body>
+                  </html>';
+
         // Utilizando sendmail
         $config['protocol'] = 'smtp';
         $config['smtp_host'] = 'mail.iessansebastian.com';
@@ -162,11 +178,10 @@ class OrderController extends CI_Controller {
         $this->email->to($user['email']);
         
         $this->email->subject("Shopping Cart");
-        $this->email->message('<html><body>Se le ha enviado la factura adjunta.</body></html>');
+        $this->email->message($body);
         $this->GenerarFacturaPDF($id, 'F');
         $this->email->attach(dirname(__DIR__) . '/upload' . '/' . 'factura_' . $id . '.pdf');
         $this->email->send();
-        // echo $this->email->print_debugger();
     }
 
 
@@ -193,11 +208,10 @@ class OrderController extends CI_Controller {
     }
 
     /**
+     * 'I' muestra factura en navegador, 'F' guarda factura en disco
      *
-     * @param unknown $id            
-     * @param number $proforma            
-     * @param string $dest
-     *            'I' muestra factura en navegador, 'F' guarda factura en disco
+     * @param      string  $id     The identifier
+     * @param      string  $dest   The destination
      */
     public function GenerarFacturaPDF($id, $dest = 'I')
     {

@@ -33,7 +33,7 @@ class Home extends CI_Controller {
 	{ 
         $this->session->set_userdata("url", 'home');
         
-		$limit = 10;
+		$limit = 5;
 
         $config['base_url'] = site_url() . '/home/index/';
         $config['total_rows'] = $this->productModel->GetFeaturedCount();
@@ -54,9 +54,15 @@ class Home extends CI_Controller {
 
     }
    	
+    /**
+     * Muestra la lista de productos con una categoria determinada
+     *
+     * @param      string   $idCategory  The identifier category
+     * @param      integer  $offset      The offset
+     */
    	public function ShowProductList ($idCategory, $offset = 0)
 	{
-		$limit = 10;
+		$limit = 5;
 
         $config['base_url'] = site_url() . '/home/ShowProductList/' . $idCategory . '/';
         $config['total_rows'] = $this->productModel->GetProductCount($idCategory);
@@ -79,6 +85,11 @@ class Home extends CI_Controller {
 
     }
 
+    /**
+     * Muestra la informacion de un producto con id determinada
+     *
+     * @param      string  $idProduct  The identifier product
+     */
     public function ShowProductById($idProduct)
     {
         $this->session->set_userdata("url", 'home/product/' . $idProduct . '');
@@ -95,32 +106,11 @@ class Home extends CI_Controller {
         $data['bodyView'] = $this->load->view('/products/productView', $data, TRUE);
         $this->load->view('layout', $data);
 
-        /*
-        $this->form_validation->set_rules('quantity', 'Cantidad', 'trim|required|min_length[1]|numeric|xss_clean');
-        $form["form_open"] = form_open("", array(
-            "class" => "form-inline"
-        ));
-        $form['error_quantity'] = form_error('quantity');
-        echo form_error('quantity');
-        
-
-        //Validación del formulario
-        if ($this->form_validation->run() == FALSE) {
-           
-            $data['categoryList'] = $categoryList;
-            $data['product'] = $product;
-            $data['form'] = $form;
-            $data['user'] = $this->session->userdata("login");
-
-            $data['bodyView'] = $this->load->view('/products/productView', $data, TRUE);
-            $this->load->view('layout', $data);
-
-        } else {
-            $this->AddProductCart();
-        }
-        */
     }
 
+    /**
+     * Muestra la vista de información del alumno
+     */
     public function ShowAboutView(){
 
         $data['bodyView'] = $this->load->view('aboutView', '', TRUE);

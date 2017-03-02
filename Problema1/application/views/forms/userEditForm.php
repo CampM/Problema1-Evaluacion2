@@ -16,25 +16,6 @@
           </div>
         </div>
 
-        <!--
-        <div class="form-group <?php if (isset($form['pass'])) { ?> has-error <?php } ?>">
-            <label for="pass" class="col-sm-2 control-label">Nueva contraseña</label>
-            <div class="col-sm-10">
-                <input type="pass" class="form-control" id="pass"
-                    name="pass" placeholder="Contraseña"> <span><?= isset($form['pass']) ? $form['pass'] : '' ?></span>
-            </div>
-        </div>
-
-        <div class="form-group <?php if (isset($form['passConf'])) { ?> has-error <?php } ?>">
-            <label for="passConf" class="col-sm-2 control-label">Repetir
-                contraseña</label>
-            <div class="col-sm-10">
-                <input type="pass" class="form-control" name="passConf"
-                    id="passConf" placeholder="Confirmar contraseña"> <span><?= isset($form['passConf']) ? $form['passConf'] : '' ?></span>
-            </div>
-        </div>
-        -->
-
         <div
             class="form-group <?php if (isset($form['email'])) { ?> has-error <?php } ?>">
             <label for="email" class="col-sm-2 co ntrol-label">Email</label>
@@ -82,8 +63,11 @@
         <div class="form-group ">
             <label for="province" class="col-sm-2 control-label">Provincia</label>
             <div class="col-sm-10">
-                <select class="form-control" name="province" value="<?=$userData['idProvince']?>" id="province"> <?php foreach ($provinceList as $row) { ?>
-                    <option value="<?= $row['idProvince'] ?>"><?= $row['provinceName'] ?></option>
+                <select class="form-control" name="province" id="province"> 
+                    <?php foreach ($provinceList as $row) { 
+                        $isSelected = $row['idProvince'] == $userData['idProvince'] ? 'selected="selected"' : '';
+                    ?>
+                    <option <?= $isSelected ?> value="<?= $row['idProvince'] ?>"><?= $row['provinceName'] ?></option>
                     <?php } ?>
                 </select>
             </div>

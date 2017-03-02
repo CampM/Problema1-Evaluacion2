@@ -33,7 +33,9 @@ class UserController extends CI_Controller {
         $this->load->view('layout', $data);
     }
 
-	//COMENTAR
+	/**
+     * Encargada de gestionar la vista del panel de usuario
+     */
 	public function UserPanel()
     {
         $login = $this->session->userdata("login");
@@ -56,10 +58,13 @@ class UserController extends CI_Controller {
 
         } else {
             $this->session->set_userdata("url", 'userPanelView');
-            redirect(site_url() . 'userController/LoginUserForm');
+            redirect(site_url('userController/LoginUserForm'));
         }
     }
 
+    /**
+     * Da de baja (o desactiva) al usuario logueado
+     */
     public function DeactivateUser()
     {
         $login = $this->session->userdata("login");
@@ -300,8 +305,6 @@ class UserController extends CI_Controller {
         }
     }
 
-    
-
     /**
      * Clave aleatoria que será la que contendrá el formulario
      *
@@ -329,7 +332,7 @@ class UserController extends CI_Controller {
 
 
     /**
-     *F uncion encargada de procesar el cambio de contraseña
+     *Funcion encargada de gestionar la vista de recuperacion de contraseña
      */
     public function ResetPass()
     {
@@ -344,7 +347,7 @@ class UserController extends CI_Controller {
     }
 
     /**
-     *F uncion encargada de procesar el cambio de contraseña
+     *Funcion encargada de procesar la recuperaracion contraseña
      */
     public function RecoverPass()
     {
@@ -386,6 +389,10 @@ class UserController extends CI_Controller {
     }
 
     /**
+     * Funcion encargada de enviar por correo la nueva contraseña
+     *
+     * @param      <type>  $email  The email
+     * @param      string  $pass   The pass
      */
     private function PassEmail($email, $pass)
     {

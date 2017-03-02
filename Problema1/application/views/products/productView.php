@@ -4,6 +4,16 @@
 	{
 		$iva = 1;
 	}
+
+	$priceIVA = $product->price * $iva;
+	$finalPrice = $priceIVA;
+
+    if (($product->discount != NULL) && ($product->discount > 0)){ 
+        $finalPrice = $finalPrice * (100 - $product->discount) / 100;
+    }
+
+    $priceIVA = round($priceIVA, 2);
+    $finalPrice = round($finalPrice, 2);
 ?>
 <div class="own-category">
     <?php foreach ($categoryList as $row) { ?> 
@@ -34,7 +44,14 @@
 			</div>
 
 			<div>
-				<strong>Precio: </strong> <?= $product->price * $iva?> € IVA incluido.
+				<strong>Precio: </strong> 
+				<?php
+				if (($product->discount != NULL) && ($product->discount > 0)){ 
+				echo "<span class='old-price'>($priceIVA €)</span> $finalPrice €";
+			    }else{
+				echo $priceIVA . ' € IVA incluido.';
+			    }
+				?>
 			</div>
 
 			<?php if ($product->stock > 0){?>

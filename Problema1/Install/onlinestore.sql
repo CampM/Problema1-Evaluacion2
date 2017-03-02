@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-03-2017 a las 14:01:10
+-- Tiempo de generación: 03-03-2017 a las 00:17:31
 -- Versión del servidor: 10.1.16-MariaDB
 -- Versión de PHP: 5.6.24
 
@@ -39,6 +39,7 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`idCategory`, `name`, `description`, `isActive`, `cod`) VALUES
+(0, 'Todos', 'Todos', 1, 'TODOS'),
 (23, 'Iluminación', 'Iluminación para el hogar', 1, 'iluminacion'),
 (25, 'Mesas', 'Mesas para la vivienda', 1, 'Mesas'),
 (27, 'Armarios', 'Armarios para el hogar', 1, 'Armarios'),
@@ -52,18 +53,20 @@ INSERT INTO `category` (`idCategory`, `name`, `description`, `isActive`, `cod`) 
 
 CREATE TABLE `featured` (
   `product_idProduct` int(11) NOT NULL,
-  `product_category_idCategory` int(11) NOT NULL
+  `product_category_idCategory` int(11) NOT NULL,
+  `dateFrom` date DEFAULT NULL,
+  `dateTo` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Volcado de datos para la tabla `featured`
 --
 
-INSERT INTO `featured` (`product_idProduct`, `product_category_idCategory`) VALUES
-(69, 23),
-(73, 23),
-(98, 25),
-(100, 25);
+INSERT INTO `featured` (`product_idProduct`, `product_category_idCategory`, `dateFrom`, `dateTo`) VALUES
+(69, 23, NULL, NULL),
+(73, 23, '2017-02-01', '2017-03-01'),
+(98, 25, '2016-11-01', '2017-10-31'),
+(100, 25, '2017-03-01', '2017-05-25');
 
 -- --------------------------------------------------------
 
@@ -87,13 +90,6 @@ CREATE TABLE `order` (
   `cp` char(5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `order`
---
-
-INSERT INTO `order` (`idOrder`, `stay`, `quantity`, `price`, `orderDate`, `deliveredDate`, `user_idUser`, `name`, `surnames`, `email`, `dni`, `address`, `cp`) VALUES
-(108, 'pendiente', 60, '448.50', '2017-03-01', NULL, 47, 'Pruebas', 'Probando Pruebas', 'Pruebas@hotmail.com', '48929029w', 'Direccion de pruebas', '21105');
-
 -- --------------------------------------------------------
 
 --
@@ -104,16 +100,8 @@ CREATE TABLE `orderline` (
   `product_idProduct` int(11) NOT NULL,
   `order_idOrder` int(11) NOT NULL,
   `quantity` varchar(45) DEFAULT NULL,
-  `price` decimal(6,2) DEFAULT NULL
+  `linePrice` decimal(6,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `orderline`
---
-
-INSERT INTO `orderline` (`product_idProduct`, `order_idOrder`, `quantity`, `price`) VALUES
-(69, 108, '50', '8.97'),
-(71, 108, '10', '0.00');
 
 -- --------------------------------------------------------
 
@@ -140,49 +128,47 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`idProduct`, `name`, `price`, `discount`, `image`, `iva`, `description`, `stock`, `category_idCategory`, `isActive`, `cod`) VALUES
-(69, 'Lampan', '2.99', '0.00', 'LampanRed.jpg', '3.00', 'Lampara de mesa roja', 50, 23, 1, 'L1'),
-(70, 'Lampan', '2.00', '0.00', 'LampanBlue.jpg', '0.00', NULL, 10, 23, 1, 'L2'),
-(71, 'Lampan', '2.00', '0.00', 'LampanBlue.jpg', '0.00', NULL, 0, 23, 1, 'L2'),
-(72, 'Lampan', '2.99', '0.00', 'LampanWhite.jpg', '1.00', NULL, 5, 23, 1, 'L3'),
-(73, 'Fado', '8.00', '0.00', 'Fado.jpg', '1.00', 'Lampara de mesa blanca', 3, 23, 1, 'L4'),
-(74, 'Lampan', '2.99', '0.00', 'LampanWhite.jpg', '1.00', NULL, 5, 23, 1, 'L3'),
-(75, 'Fado', '8.00', '0.00', 'Fado.jpg', '1.00', 'Lampara de mesa blanca', 3, 23, 1, 'L4'),
-(76, 'Solleftea', '9.99', '0.00', 'Solleftea.jpg', '2.00', 'Lampara blanca', 9, 23, 0, 'L6'),
-(77, 'Sinnerlig', '30.00', '0.00', 'Sinnerlig.jpg', '0.00', 'Lampara blanca', 7, 23, 1, 'L6'),
-(78, 'Klab', '36.00', '0.00', 'Sinnerlig.jpg', '1.00', 'Lampara', 50, 23, 1, 'L7'),
-(79, 'Gavic', '12.00', '0.00', 'Gavic.jpg', '3.00', 'Lampara Gavik', 13, 23, 1, 'L11'),
-(80, 'Varv', '50.00', '0.00', 'Varv.jpg', '5.00', 'Lampara cara', 2, 23, 1, 'L12'),
-(81, 'Solleftea', '9.99', '0.00', 'Solleftea.jpg', '2.00', 'Lampara blanca', 9, 23, 0, 'L6'),
-(82, 'Sinnerlig', '30.00', '0.00', 'Sinnerlig.jpg', '0.00', 'Lampara blanca', 7, 23, 1, 'L6'),
-(83, 'Klab', '36.00', '0.00', 'Sinnerlig.jpg', '1.00', 'Lampara', 50, 23, 1, 'L7'),
-(84, 'Gavic', '12.00', '0.00', 'Gavic.jpg', '3.00', 'Lampara Gavik', 13, 23, 1, 'L11'),
-(85, 'Varv', '50.00', '0.00', 'Varv.jpg', '5.00', 'Lampara cara', 2, 23, 1, 'L12'),
-(86, 'Lykta', '13.00', '0.00', 'Lykta.jpg', '0.00', 'Lampara', 5, 23, 1, 'L13'),
-(87, 'Riggad', '23.00', '0.00', 'Riggad.jpg', '3.00', 'Otra lampara', 30, 23, 1, 'L15'),
-(88, 'Lykta', '13.00', '0.00', 'Lykta.jpg', '0.00', 'Lampara', 5, 23, 1, 'L13'),
-(89, 'Riggad', '23.00', '0.00', 'Riggad.jpg', '3.00', 'Otra lampara', 30, 23, 1, 'L15'),
-(98, 'Bjursta', '100.00', '0.00', 'Bjursta.jpg', '3.00', 'Mesa de madera', 0, 25, 1, 'M1'),
-(99, 'Gamleby', '150.50', '0.00', 'Gamleby.jpg', '3.00', 'Mesa de madera', 70, 25, 1, 'M2'),
-(100, 'Bjursnas', '300.00', '0.00', 'Bjursnas.jpg', '2.00', 'Mesa muy cara', 20, 25, 1, 'M3'),
-(101, 'Stornas', '31.00', '0.00', 'Stornas.jpg', '3.00', 'Otra mesa', 20, 25, 1, 'M4'),
-(102, 'StornasMadera', '300.00', '0.00', 'StornasMadera.jpg', '2.00', 'Otra mesa mas cara', 3, 25, 1, 'M5'),
-(103, 'StorasLisa', '300.00', '0.00', 'StorasLisa.jpg', '1.00', 'Una mesa lisa', 300, 25, 1, 'M6'),
-(104, 'StornasClon', '300.00', '0.00', 'StornasClon.jpg', '2.00', 'Una mesa muy repetitiva', 0, 23, 1, 'M10'),
-(105, 'Ingatorp', '500.00', '0.00', 'Ingatorp.jpg', '3.00', 'Mesa mas elegante', 0, 25, 1, 'M30'),
-(106, 'StornasAgain', '350.00', '0.00', 'StornasAgain.jpg', '2.00', 'Otra vez la misma mesa', 10, 25, 1, 'M31'),
-(107, 'BjurstaMarron', '321.00', '0.00', 'BjurstaMarron.jpg', '2.00', 'Una mesa mas', 60, 25, 1, 'M35'),
-(108, 'StornasClon', '300.00', '0.00', 'StornasClon.jpg', '2.00', 'Una mesa muy repetitiva', 0, 23, 1, 'M10'),
-(109, 'Ingatorp', '500.00', '0.00', 'Ingatorp.jpg', '3.00', 'Mesa mas elegante', 0, 25, 1, 'M30'),
-(110, 'StornasAgain', '350.00', '0.00', 'StornasAgain.jpg', '2.00', 'Otra vez la misma mesa', 10, 25, 1, 'M31'),
-(111, 'BjurstaMarron', '321.00', '0.00', 'BjurstaMarron.jpg', '2.00', 'Una mesa mas', 60, 25, 1, 'M35'),
-(112, 'Lagan', '300.00', '0.00', 'Lagan.jpg', '3.00', 'El inalcanzable', 10, 28, 1, 'F1'),
-(113, 'Lagan', '300.00', '0.00', 'Lagan.jpg', '3.00', 'El inalcanzable', 10, 28, 1, 'F1'),
-(114, 'Detolf', '50.00', '0.00', 'Detolf.jpg', '2.00', 'Una vitrina, la unica', 1, 27, 1, 'A1'),
-(115, 'Hemmes', '300.00', '0.00', 'Hemmes.jpg', '3.00', 'Un armario', 3, 27, 1, 'A2'),
-(116, 'Liatorp', '35.00', '0.00', 'Liatorp.jpg', '3.00', 'El ultimo armario', 1, 27, 1, 'A3'),
-(117, 'Detolf', '50.00', '0.00', 'Detolf.jpg', '2.00', 'Una vitrina, la unica', 1, 27, 1, 'A1'),
-(118, 'Hemmes', '300.00', '0.00', 'Hemmes.jpg', '3.00', 'Un armario', 3, 27, 1, 'A2'),
-(119, 'Liatorp', '35.00', '0.00', 'Liatorp.jpg', '3.00', 'El ultimo armario', 1, 27, 1, 'A3');
+(69, 'Lampan', '2.99', '25.00', 'LampanRed.jpg', '1.12', 'Lampara de mesa roja', 100, 23, 1, 'L1'),
+(70, 'Lampan', '2.00', '33.00', 'LampanBlue.jpg', '1.21', NULL, 10, 23, 1, 'L2'),
+(72, 'Lampan', '2.99', '15.00', 'LampanWhite.jpg', '1.21', NULL, 5, 23, 1, 'L3'),
+(73, 'Fado', '8.00', '0.00', 'Fado.jpg', '1.12', 'Lampara de mesa blanca', 3, 23, 1, 'L4'),
+(74, 'Lampan', '2.99', '0.00', 'LampanWhite.jpg', '1.21', NULL, 5, 23, 1, 'L3'),
+(75, 'Fado', '8.00', '0.00', 'Fado.jpg', '1.12', 'Lampara de mesa blanca', 3, 23, 1, 'L4'),
+(76, 'Solleftea', '9.99', '0.00', 'Solleftea.jpg', '1.21', 'Lampara blanca', 9, 23, 0, 'L6'),
+(77, 'Sinnerlig', '30.00', '0.00', 'Sinnerlig.jpg', '1.12', 'Lampara blanca', 7, 23, 1, 'L6'),
+(78, 'Klab', '36.00', '0.00', 'Sinnerlig.jpg', '1.21', 'Lampara', 50, 23, 1, 'L7'),
+(79, 'Gavic', '12.00', '0.00', 'Gavic.jpg', '1.12', 'Lampara Gavik', 13, 23, 1, 'L11'),
+(80, 'Varv', '50.00', '0.00', 'Varv.jpg', '1.21', 'Lampara cara', 2, 23, 1, 'L12'),
+(81, 'Solleftea', '9.99', '0.00', 'Solleftea.jpg', '1.12', 'Lampara blanca', 9, 23, 0, 'L6'),
+(82, 'Sinnerlig', '30.00', '0.00', 'Sinnerlig.jpg', '1.21', 'Lampara blanca', 7, 23, 1, 'L6'),
+(84, 'Gavic', '12.00', '0.00', 'Gavic.jpg', '1.21', 'Lampara Gavik', 13, 23, 1, 'L11'),
+(85, 'Varv', '50.00', '0.00', 'Varv.jpg', '1.12', 'Lampara cara', 2, 23, 1, 'L12'),
+(86, 'Lykta', '13.00', '0.00', 'Lykta.jpg', '1.21', 'Lampara', 5, 23, 1, 'L13'),
+(87, 'Riggad', '23.00', '0.00', 'Riggad.jpg', '1.12', 'Otra lampara', 30, 23, 1, 'L15'),
+(88, 'Lykta', '13.00', '0.00', 'Lykta.jpg', '1.21', 'Lampara', 5, 23, 1, 'L13'),
+(89, 'Riggad', '23.00', '0.00', 'Riggad.jpg', '1.12', 'Otra lampara', 30, 23, 1, 'L15'),
+(98, 'Bjursta', '100.00', '0.00', 'Bjursta.jpg', '1.21', 'Mesa de madera', 0, 25, 1, 'M1'),
+(99, 'Gamleby', '150.50', '0.00', 'Gamleby.jpg', '1.12', 'Mesa de madera', 70, 25, 1, 'M2'),
+(100, 'Bjursnas', '300.00', '0.00', 'Bjursnas.jpg', '1.21', 'Mesa muy cara', 20, 25, 1, 'M3'),
+(101, 'Stornas', '31.00', '0.00', 'Stornas.jpg', '1.12', 'Otra mesa', 20, 25, 1, 'M4'),
+(102, 'StornasMadera', '300.00', '0.00', 'StornasMadera.jpg', '1.21', 'Otra mesa mas cara', 3, 25, 1, 'M5'),
+(103, 'StorasLisa', '300.00', '0.00', 'StorasLisa.jpg', '1.12', 'Una mesa lisa', 300, 25, 1, 'M6'),
+(104, 'StornasClon', '300.00', '0.00', 'StornasClon.jpg', '1.21', 'Una mesa muy repetitiva', 0, 23, 1, 'M10'),
+(105, 'Ingatorp', '500.00', '0.00', 'Ingatorp.jpg', '1.12', 'Mesa mas elegante', 0, 25, 1, 'M30'),
+(106, 'StornasAgain', '350.00', '0.00', 'StornasAgain.jpg', '1.21', 'Otra vez la misma mesa', 10, 25, 1, 'M31'),
+(107, 'BjurstaMarron', '321.00', '0.00', 'BjurstaMarron.jpg', '1.12', 'Una mesa mas', 60, 25, 1, 'M35'),
+(108, 'StornasClon', '300.00', '0.00', 'StornasClon.jpg', '1.21', 'Una mesa muy repetitiva', 0, 23, 1, 'M10'),
+(109, 'Ingatorp', '500.00', '0.00', 'Ingatorp.jpg', '1.12', 'Mesa mas elegante', 0, 25, 1, 'M30'),
+(110, 'StornasAgain', '350.00', '0.00', 'StornasAgain.jpg', '1.21', 'Otra vez la misma mesa', 10, 25, 1, 'M31'),
+(111, 'BjurstaMarron', '321.00', '0.00', 'BjurstaMarron.jpg', '1.12', 'Una mesa mas', 60, 25, 1, 'M35'),
+(112, 'Lagan', '300.00', '0.00', 'Lagan.jpg', '1.21', 'El inalcanzable', 10, 28, 1, 'F1'),
+(113, 'Lagan', '300.00', '0.00', 'Lagan.jpg', '1.12', 'El inalcanzable', 10, 28, 1, 'F1'),
+(114, 'Detolf', '50.00', '0.00', 'Detolf.jpg', '1.21', 'Una vitrina, la unica', 1, 27, 1, 'A1'),
+(115, 'Hemmes', '300.00', '0.00', 'Hemmes.jpg', '1.12', 'Un armario', 3, 27, 1, 'A2'),
+(116, 'Liatorp', '35.00', '0.00', 'Liatorp.jpg', '1.21', 'El ultimo armario', 1, 27, 1, 'A3'),
+(117, 'Detolf', '50.00', '0.00', 'Detolf.jpg', '1.12', 'Una vitrina, la unica', 1, 27, 1, 'A1'),
+(118, 'Hemmes', '300.00', '0.00', 'Hemmes.jpg', '1.21', 'Un armario', 3, 27, 1, 'A2'),
+(119, 'Liatorp', '35.00', '0.00', 'Liatorp.jpg', '1.12', 'El ultimo armario', 1, 27, 1, 'A3');
 
 -- --------------------------------------------------------
 
@@ -252,20 +238,6 @@ INSERT INTO `province` (`idProvince`, `provinceName`) VALUES
 (50, 'Zaragoza'),
 (51, 'Ceuta'),
 (52, 'Melilla');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `resetpass`
---
-
-CREATE TABLE `resetpass` (
-  `idResetPass` int(10) UNSIGNED NOT NULL,
-  `idUser` int(10) UNSIGNED NOT NULL,
-  `user` varchar(15) NOT NULL,
-  `token` varchar(64) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -340,13 +312,6 @@ ALTER TABLE `province`
   ADD PRIMARY KEY (`idProvince`);
 
 --
--- Indices de la tabla `resetpass`
---
-ALTER TABLE `resetpass`
-  ADD PRIMARY KEY (`idResetPass`),
-  ADD UNIQUE KEY `iduser` (`idUser`);
-
---
 -- Indices de la tabla `user`
 --
 ALTER TABLE `user`
@@ -363,27 +328,22 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT de la tabla `category`
 --
 ALTER TABLE `category`
-  MODIFY `idCategory` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `idCategory` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 --
 -- AUTO_INCREMENT de la tabla `order`
 --
 ALTER TABLE `order`
-  MODIFY `idOrder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+  MODIFY `idOrder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 --
 -- AUTO_INCREMENT de la tabla `product`
 --
 ALTER TABLE `product`
   MODIFY `idProduct` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
 --
--- AUTO_INCREMENT de la tabla `resetpass`
---
-ALTER TABLE `resetpass`
-  MODIFY `idResetPass` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
---
 -- AUTO_INCREMENT de la tabla `user`
 --
 ALTER TABLE `user`
-  MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `idUser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 --
 -- Restricciones para tablas volcadas
 --

@@ -6,13 +6,14 @@
     </div>
 
    
-    <div style="margin-top: 15px;">
+    <div>
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Imagen</th>
                     <th>Nombre</th>
                     <th>Precio</th>
+                    <th>Stock</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +32,25 @@
                         </a>
                     </td>
                     <td style="padding-left: 15px;">
-                        <?= $row->price ?> €
+
+                        <?php 
+                        $iva = $row->iva;
+                        if ($iva == NULL)
+                        {
+                            $iva = 1;
+                        }
+
+                        if (($row->discount != NULL) && ($row->discount > 0)){ 
+                            $finalPrice = round($row->price * $iva * (100 - $row->discount) / 100, 2);
+                            echo "<span class='old-price'>($row->price €)</span> $finalPrice €";
+                        }else{
+                            echo round($row->price * $iva) . ' €';
+                        }
+                        ?>
+                        
+                    </td>
+                    <td style="padding-left: 15px;">
+                        <?= $row->stock ?>
                     </td>
                 </tr>
 
